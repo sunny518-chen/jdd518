@@ -1,0 +1,30 @@
+1 # File: .github/workflows/repo-sync.yml 
+2 name: sync-sazs34-scripts 
+3 on: 
+4   schedule: 
+5     - cron: '5 15 * * *' 
+6   workflow_dispatch: 
+7   watch: 
+8     types: started 
+9   repository_dispatch: 
+10     types: sync-sazs34-scripts 
+11 jobs: 
+12   repo-sync: 
+13     env: 
+14       PAT: ${{ github.event.client_payload.PAT || secrets.PAT }} #此处PAT需要申请，教程详见：https://www.jianshu.com/p/bb82b3ad1d11 
+15     runs-on: ubuntu-latest 
+16     if: github.event.repository.owner.id == github.event.sender.id 
+17     steps: 
+18       - uses: actions/checkout@v2 
+19         with: 
+20           persist-credentials: false 
+21 
+ 
+22       - name: sync sazs34-scripts 
+23         uses: repo-sync/github-sync@v2 
+24         if: env.PAT 
+25         with: 
+26           source_repo: "https://github.com/sazs34/MyActions.git" 
+27           source_branch: "master" 
+28           destination_branch: "main" 
+29           github_token: ${{ github.event.client_payload.PAT || secrets.PAT }} 
